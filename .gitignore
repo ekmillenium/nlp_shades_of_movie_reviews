@@ -1,2 +1,5 @@
 raw_data/
 notebooks/
+*.egg-info/
+__pycache__/
+.python-version

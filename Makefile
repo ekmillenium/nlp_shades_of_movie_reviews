@@ -2,7 +2,7 @@
 #         LOCAL SET UP
 # ----------------------------------
 
-install_packages:
+reinstall_packages:
 	@pip install -r requirements.txt
 
 download_spacy_pipeline:
@@ -14,4 +14,4 @@ download_spacy_pipeline:
 # ----------------------------------
 
 install:
-	@pip install . -U
+	@pip install -e . 
