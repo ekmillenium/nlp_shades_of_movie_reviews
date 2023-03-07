@@ -5,7 +5,7 @@
 install_packages:
 	@pip install -r requirements.txt
 
-run_spacy_process:
+download_spacy_pipeline:
 	python -m spacy download en_core_web_trf
 
 
