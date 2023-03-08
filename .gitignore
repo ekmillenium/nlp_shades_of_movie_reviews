@@ -3,3 +3,4 @@ notebooks/
 *.egg-info/
 __pycache__/
 .python-version
+.DS_store
