@@ -17,13 +17,9 @@ class Preprocessing():
         self.model = model
         
         if model == "bert":
-            print('BERT preprocessing running ...')
             self.bert()
-            print('BERT preprocessing done.')
         elif model == "ner":
-            print('NER preprocessing running ...')
             self.ner()
-            print('NER preprocessing done.')
         else:
             print('UnkownModelError: the available models are ["bert","ner"].')
     
@@ -45,7 +41,7 @@ class Preprocessing():
 
         #remove extra space
         clean_review = " ".join(self.review.split())
-
+        
         return clean_review
     
     
