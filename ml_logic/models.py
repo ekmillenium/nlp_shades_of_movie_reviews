@@ -1,6 +1,19 @@
 
+### Import packages ###
+
+# Bert
 from transformers import TFBertModel
 import tensorflow as tf
+
+# Spacy
+import spacy
+from spacy import displacy
+
+# Basics
+import pandas as pd
+
+# Relatives
+from ml_logic.data import Preprocessing
 
 
 
@@ -84,3 +97,45 @@ class BertModel():
 
     def predict(self):
         pass
+
+
+
+class NerModel():
+    
+    # Constructor #
+    def __init__(self, pretrained_model: str = None, review: str = None):
+        self.pretrained_model = pretrained_model
+        self.review = review
+    
+    
+    def load(self):
+        model = spacy.load(self.pretrained_model)
+        return model
+        
+
+    def extract_content(self, model):        
+        doc = model(self.review)
+        sentences_extracted = []
+        
+        if doc.ents != ():
+            for ent in  doc.ents:
+                if ent.label_ == "PERSON":
+                    if ent.sent not in sentences_extracted:
+                        sentences_extracted.append(ent.sent)
+            
+        return ' '.join(str(sent) for sent in sentences_extracted)
+    
+    
+    def extract_people(self, model):
+        doc = model(self.review)
+        people_extracted= []
+        
+        if doc.ents != ():
+            for ent in  doc.ents:
+                if ent.label_ == "PERSON":
+                    if ent.text not in people_extracted:
+                        people_extracted.append(ent.text)
+            
+        return ' '.join(str(sent) for sent in people_extracted)
+    
+    
