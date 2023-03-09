@@ -1,45 +1,78 @@
+
+### Import packages ###
+
+# Basics
 import string
 import re
 
 
-def basic_preprocessing(sentence):
-    '''
-    Function to make the basic preprocessing operations:
-    - Remove the text about "how many people found this useful"
-    - Remove the html balises if there are any
-    - Remove whitespace and extra space
-    - Lowercase caracters
-    - Remove numbers
-    - Remove punctuation
-    - Remove url from texts
+### Initialize Preprocessing ###
 
-    '''
+class Preprocessing():
+    
+    ### Constructor ###
+    
+    def __init__(self, review: str, model=None):
+        self.review = review
+        self.model = model
+        
+        if model == "bert":
+            self.bert()
+        elif model == "ner":
+            self.ner()
+        else:
+            print('UnkownModelError: the available models are ["bert","ner"].')
+    
+    
+    ### Preprocessing for NER ###
+    
+    def ner(self):
+        # remove the lines about "how many people found this useful" at the end of some reviews
+        clean_review = re.sub("Permalink", "", self.review)
+        clean_review = re.sub("Was this review helpful?", "", self.review)
+        clean_review = re.sub("Sign in to vote.", "", self.review)
+        clean_review = re.sub("\d+ out of \d+ found this helpful", "", self.review)
 
-    ################## Basic preprocessing #######################################################################
+        # Remove urls from text
+        clean_review = re.sub(r"http\S+", "", self.review)
 
-    # remove the lines about "how many people found this useful" at the end of some reviews
-    sentence = re.sub("Permalink", "", sentence)
-    sentence = re.sub("Was this review helpful?", "", sentence)
-    sentence = re.sub("Sign in to vote.", "", sentence)
-    sentence = re.sub("\d+ out of \d+ found this helpful", "", sentence)
+        #remove html tags if there are any
+        clean_review = re.sub(re.compile('<.*?>'), '', self.review)
 
-    # Remove urls from text
-    sentence = re.sub(r"http\S+", "", sentence)
+        #remove extra space
+        clean_review = " ".join(self.review.split())
+        
+        return clean_review
+    
+    
+    ### Preprocessing for BERT ###
+    
+    def bert(self):
+        # remove the lines about "how many people found this useful" at the end of some reviews
+        clean_review = re.sub("Permalink", "", self.review)
+        clean_review = re.sub("Was this review helpful?", "", self.review)
+        clean_review = re.sub("Sign in to vote.", "", self.review)
+        clean_review = re.sub("\d+ out of \d+ found this helpful", "", self.review)
+        
+        # Remove urls from text
+        clean_review = re.sub(r"http\S+", "", self.review)
 
-    #remove html tags if there are any
-    sentence = re.sub(re.compile('<.*?>'), '', sentence)
+        #remove html tags if there are any
+        clean_review = re.sub(re.compile('<.*?>'), '', self.review)
 
-    # lowercase characters
-    sentence = sentence.lower()
+        # lowercase characters
+        clean_review = self.review.lower()
 
-    # remove numbers
-    sentence = ''.join(char for char in sentence if not char.isdigit())
+        # remove numbers
+        clean_review = ''.join(char for char in self.review if not char.isdigit())
 
-    # remove punctuation
-    for punctuation in string.punctuation:
-        sentence = sentence.replace(punctuation, ' ')
+        # remove punctuation
+        for punctuation in string.punctuation:
+            clean_review = self.review.replace(punctuation, ' ')
 
-    #remove extra space
-    sentence = " ".join(sentence.split())
+        #remove extra space
+        clean_review = " ".join(self.review.split())
 
-    return sentence
+        return clean_review
+    
+    
