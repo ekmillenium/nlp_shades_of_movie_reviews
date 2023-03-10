@@ -48,7 +48,7 @@ class Preprocessing():
 
         #remove extra space
         self.review = " ".join(self.review.split())
-        
+
 
     ### Preprocessing for BERT ###
 
@@ -118,12 +118,12 @@ class TargetBuilder():
         to 0 if review between 0 and 6 and 1 if review higher than 6
         '''
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 6:
-            return 1
+            self.rating = 1
         else :
-            return 0
+            self.rating = 0
 
     def bert_three_classes(self):
         '''
@@ -134,14 +134,14 @@ class TargetBuilder():
         - 2 if review higher than 6
         '''
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 6:
-            return 2
+            self.rating = 2
         elif number_rating > 4:
-            return 1
+            self.rating = 1
         else:
-            return 0
+            self.rating = 0
 
     def bert_five_classes(self):
         '''
@@ -154,15 +154,15 @@ class TargetBuilder():
         - 4 if review between 9 and 10
         '''
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 8:
-            return 4
+            self.rating = 4
         elif number_rating > 6:
-            return 3
+           self.rating =  3
         if number_rating > 4:
-            return 2
+            self.rating = 2
         elif number_rating > 2:
-            return 1
+            self.rating = 1
         else:
-            return 0
+            self.rating = 0
