@@ -3,7 +3,7 @@
 
 # Bert
 from transformers import BertTokenizer
-import tensorflow as tf
+#import tensorflow as tf
 
 
 class Tokenizer():
