@@ -1,5 +1,7 @@
 
-### Import packages ###
+'''
+Import packages
+'''
 
 # Bert
 from transformers import TFBertModel
@@ -16,10 +18,8 @@ import pandas as pd
 from ml_logic.data import Preprocessing
 
 
-
 class BertModel():
 
-    #Constructor#
     def __init__(self, backbone_model = TFBertModel, from_pretrained = "bert-base-uncased",  max_length = 256, nb_categories = 2):
         self.backbone_model = backbone_model
         self.pretrained = from_pretrained
@@ -99,10 +99,8 @@ class BertModel():
         pass
 
 
-
 class NerModel():
     
-    # Constructor #
     def __init__(self, pretrained_model: str = None, review: str = None):
         self.pretrained_model = pretrained_model
         self.review = review

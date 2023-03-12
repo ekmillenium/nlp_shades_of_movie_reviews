@@ -4,3 +4,5 @@ notebooks/
 __pycache__/
 .python-version
 .DS_store
+.env
+.env.yaml

@@ -1,5 +1,7 @@
 
-### Import packages ###
+'''
+Import packages
+'''
 
 # Bert
 from transformers import BertTokenizer
@@ -8,7 +10,6 @@ import tensorflow as tf
 
 class Tokenizer():
 
-    #Constructor#
     def __init__(self, tokenizer = BertTokenizer, from_pretrained = "bert-base-uncased", max_length = 256):
         self.tokenizer = tokenizer.from_pretrained(from_pretrained)
         self.max_length = max_length
