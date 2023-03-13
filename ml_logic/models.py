@@ -20,12 +20,12 @@ from ml_logic.data import Preprocessing
 
 class BertModel():
 
-    def __init__(self, backbone_model = TFBertModel, from_pretrained = "bert-base-uncased",  max_length = 256, nb_categories = 2):
+    def __init__(self, backbone_model = TFBertModel, from_pretrained = "bert-base-uncased",  max_length = 512, nb_categories = 3):
         self.backbone_model = backbone_model
         self.pretrained = from_pretrained
         self.max_length = max_length
         self.nb_categories = nb_categories
-        self.model = "hello"
+        self.model = None
 
 
     def build(self):
@@ -43,6 +43,8 @@ class BertModel():
 
         #Add layers
         x = tf.keras.layers.Dense(self.max_length,activation='relu')(x)
+        x = tf.keras.layers.Dense(128,activation='relu')(x)
+        x = tf.keras.layers.Dense(32,activation='relu')(x)
 
         #define the last layer according to the number of categories in the output
         if self.nb_categories == 2:
