@@ -88,8 +88,8 @@ class Preprocessing():
         self.review = re.sub(re.compile('<.*?>'), '', self.review)
 
         self.review = " ".join(self.review.split())
-        
-        
+
+
     def bert(self):
         '''
         Function to do the basic data preprocessing for BERT model
@@ -150,12 +150,12 @@ class TargetBuilder():
         '''
         
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 6:
-            return 1
+            self.rating = 1
         else :
-            return 0
+            self.rating = 0
 
     def bert_three_classes(self):
         '''
@@ -167,14 +167,14 @@ class TargetBuilder():
         '''
         
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 6:
-            return 2
+            self.rating = 2
         elif number_rating > 4:
-            return 1
+            self.rating = 1
         else:
-            return 0
+            self.rating = 0
 
     def bert_five_classes(self):
         '''
@@ -188,19 +188,20 @@ class TargetBuilder():
         '''
         
         # turn rating column into a number between 0 and 10
-        number_rating = (self.rating.replace("/10","")).astype(float)
+        number_rating = float(self.rating.replace("/10",""))
 
         if number_rating > 8:
-            return 4
+            self.rating = 4
         elif number_rating > 6:
-            return 3
+           self.rating =  3
         if number_rating > 4:
-            return 2
+            self.rating = 2
         elif number_rating > 2:
-            return 1
+            self.rating = 1
         else:
             return 0
 
 
 if __name__ == '__main__':
   load_data_to_bq(data_size=sys.argv[2], gcp_project=GCP_PROJECT, bq_dataset=BQ_DATASET, table=f"raw", truncate=True)
+

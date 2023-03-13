@@ -25,9 +25,10 @@ class BertModel():
         self.pretrained = from_pretrained
         self.max_length = max_length
         self.nb_categories = nb_categories
+        self.model = "hello"
 
 
-    def build_model(self):
+    def build(self):
         '''
         Build a model from pretrained model and adding layers
         '''
@@ -42,26 +43,29 @@ class BertModel():
 
         #Add layers
         x = tf.keras.layers.Dense(self.max_length,activation='relu')(x)
-        x = tf.keras.layers.Dense(128,activation='relu')(x)
 
         #define the last layer according to the number of categories in the output
         if self.nb_categories == 2:
             activation = 'sigmoid'
+            output = tf.keras.layers.Dense(1,activation=activation)(x)
+            print('we consider two categories')
+
         elif self.nb_categories == 3 or self.nb_categories == 5:
             activation = 'softmax'
+            output = tf.keras.layers.Dense(self.nb_categories,activation=activation)(x)
 
         else:
             print('This model can only be applied to 2, 3 or 5 categories')
 
-        output = tf.keras.layers.Dense(self.nb_categories,activation=activation)(x)
-
         #build the model
         model = tf.keras.Model(inputs=dict(input_ids=token_ids,attention_mask=attention_mask),outputs=output)
 
-        return model
+
+        self.model = model
 
 
-    def compile_model(self):
+
+    def compile(self):
 
         '''
         Build a compiler for the model depending on the number of classes in the target: 2, 3 or 5
@@ -83,10 +87,25 @@ class BertModel():
             metrics=metrics)
 
 
-    def train_model(self, tokens, y, epochs = 3, batch_size = 256):
+    def train(self, train_tokens, val_tokens, y_train, y_val,  epochs = 3, batch_size = 64, early_stopping = 0):
+        """
+        fit the model on the given tokens
+        """
+        #Define X_train
+        X_train = {
+            'input_ids': train_tokens['input_ids'],
+            'attention_mask': train_tokens['attention_mask']
+            }
+        #Define X_test
+        X_val = {
+            'input_ids': val_tokens['input_ids'],
+            'attention_mask': val_tokens['attention_mask']
+            }
+        #Fit the model
         history = self.model.fit(
-            x={'input_ids':tokens['input_ids'], 'attention_mask':tokens['attention_mask']},
-            y=y,
+            x=X_train,
+            y=y_train,
+            validation_data = (X_val, y_val),
             epochs=epochs,
             batch_size=batch_size
             )
@@ -95,45 +114,50 @@ class BertModel():
 
 
 
-    def predict(self):
-        pass
+    def predict(self, tokens):
+        '''
+        returns the prediction for given reviews, the input should have been tokenized before using an adapted tokenizer
+        '''
+        X = {
+            'input_ids': tokens['input_ids'],
+            'attention_mask': tokens['attention_mask']
+            }
+        return self.model.predict(X)
 
 
 class NerModel():
-    
+
     def __init__(self, pretrained_model: str = None, review: str = None):
         self.pretrained_model = pretrained_model
         self.review = review
-    
-    
+
+
     def load(self):
         model = spacy.load(self.pretrained_model)
         return model
-        
 
-    def extract_content(self, model):        
+
+    def extract_content(self, model):
         doc = model(self.review)
         sentences_extracted = []
-        
+
         if doc.ents != ():
             for ent in  doc.ents:
                 if ent.label_ == "PERSON":
                     if ent.sent not in sentences_extracted:
                         sentences_extracted.append(ent.sent)
-            
+
         return ' '.join(str(sent) for sent in sentences_extracted)
-    
-    
+
+
     def extract_people(self, model):
         doc = model(self.review)
         people_extracted= []
-        
+
         if doc.ents != ():
             for ent in  doc.ents:
                 if ent.label_ == "PERSON":
                     if ent.text not in people_extracted:
                         people_extracted.append(ent.text)
-            
+
         return ' '.join(str(sent) for sent in people_extracted)
-    
-    
