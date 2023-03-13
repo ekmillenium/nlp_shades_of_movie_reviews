@@ -44,3 +44,11 @@ run_ner_on_450k:
 
 run_ner_on_all:
 	python interface/main.py run_ner_model 'all'
+
+
+# ----------------------------------
+#    API
+# ----------------------------------
+
+run_api:
+	uvicorn interface.api:app --reload

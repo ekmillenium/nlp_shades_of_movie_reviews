@@ -49,18 +49,15 @@ def load_data(data_size: str):
   return data
 
 
-def run_ner_model(data_size: str):
+def run_ner_model(df: pd.DataFrame):
   '''
   Named Entity Recognition (NER) model
   
-  - Load the data
   - Clean the data
   - Load the pretrained model
   - Extract information from NER
   '''
   
-  df = load_data(data_size=data_size)
-
   df["content_cleaned"] = df["content"].apply(
     lambda r : Preprocessing(
       model="ner",
@@ -86,4 +83,5 @@ def run_ner_model(data_size: str):
 
 
 if __name__ == '__main__':
-  run_ner_model(data_size=sys.argv[2]) 
+  df = load_data(data_size=sys.argv[2])
+  run_ner_model(df=df) 
