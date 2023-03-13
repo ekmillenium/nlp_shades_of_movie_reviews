@@ -14,3 +14,4 @@ ipykernel
 google-cloud-bigquery
 google-cloud-storage
 pyarrow
+db-dtypes
