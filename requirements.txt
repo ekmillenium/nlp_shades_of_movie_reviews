@@ -18,3 +18,4 @@ db-dtypes
 # API
 fastapi         # API framework
 uvicorn         # web server
+transformers
