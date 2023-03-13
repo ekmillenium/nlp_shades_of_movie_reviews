@@ -15,3 +15,6 @@ google-cloud-bigquery
 google-cloud-storage
 pyarrow
 db-dtypes
+# API
+fastapi         # API framework
+uvicorn         # web server
