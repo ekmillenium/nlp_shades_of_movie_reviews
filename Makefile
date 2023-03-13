@@ -34,13 +34,13 @@ load_all_data_to_bq:
 	python ml_logic/data.py load_data_to_bq 'all'
 
 run_ner_on_10k:
-	python interface/main.py run_ner_model '10000'
+	python interface/main.py run_ner_model '10k'
 
 run_ner_on_300k:
-	python interface/main.py run_ner_model '300000'
+	python interface/main.py run_ner_model '300k'
 
 run_ner_on_450k:
-	python interface/main.py run_ner_model '450000'
+	python interface/main.py run_ner_model '450k'
 
 run_ner_on_all:
 	python interface/main.py run_ner_model 'all'

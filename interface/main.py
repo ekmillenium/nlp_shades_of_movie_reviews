@@ -46,7 +46,7 @@ def load_data(data_size: str):
     
     data.to_csv(data_query_cache_path, header=True, index=False) # Save it locally to accelerate for next queries!
     
-  return data.head(1)
+  return data
 
 
 def run_ner_model(data_size: str):
@@ -80,8 +80,7 @@ def run_ner_model(data_size: str):
     lambda r : NerModel(
       review=r
     ).extract_people(model)
-  )
-  print(df) 
+  ) 
   
   return df
 
