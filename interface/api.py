@@ -13,10 +13,6 @@ from fastapi.middleware.cors import CORSMiddleware
 # Relatives
 from interface.main import run_ner_model
 
-# Spacy 
-import spacy
-from spacy import displacy
-
 
 '''
 Middlewares
