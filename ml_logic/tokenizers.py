@@ -5,6 +5,7 @@ Import packages
 
 # Bert
 from transformers import BertTokenizer
+
 #import tensorflow as tf
 
 
