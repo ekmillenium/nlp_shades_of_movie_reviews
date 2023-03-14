@@ -68,7 +68,7 @@ def run_ner_model(df: pd.DataFrame):
 
   model = NerModel(pretrained_model="en_core_web_trf").load()
 
-  df["content_extracted"] = df["content_cleaned"].apply(
+  df["content_extracted"], df["content_extracted_labelized"] = df["content_cleaned"].apply(
     lambda r : NerModel(
       review=r
     ).extract_content(model)

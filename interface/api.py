@@ -13,6 +13,10 @@ from fastapi.middleware.cors import CORSMiddleware
 # Relatives
 from interface.main import run_ner_model
 
+# Spacy 
+import spacy
+from spacy import displacy
+
 
 '''
 Middlewares
@@ -47,12 +51,17 @@ def extract_entities(title: str):
   ### SCRAPER HERE ###
   pass
 
+  df = pd.read_csv('./raw_data/reviews_10k.csv')
+  df = df.head(2)
   df = run_ner_model(df=df)
   
-  return df
+  return {
+    "Content": df["content_extracted"],
+    "Content labelized": df["content_extracted_labelized"]
+  }
 
 
 # Root
 @app.get("/")
 def root():
-  return "Welcome on NLP shades of movie reviews"
+  return { "Root": "Welcome on NLP shades of movie reviews" }
