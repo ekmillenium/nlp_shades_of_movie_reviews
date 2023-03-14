@@ -18,6 +18,7 @@ INSTANCE = os.environ.get("INSTANCE")
 
 # Docker
 GCR_IMAGE = os.environ.get("GCR_IMAGE")
+GCR_REGION = os.environ.get("GC_REGION")
 
 ##################  CONSTANTS  #####################
 LOCAL_DATA_PATH = os.path.join(os.path.expanduser('~'), os.environ.get("LOCAL_DATA_PATH"))
