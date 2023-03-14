@@ -127,16 +127,15 @@ class BertModel():
         return self.model.predict(X)
 
 
-    def save(self, path):
-        """
-        Saves the model in a given path
-        """
-
-
-    def load(self, path):
+    def load(self):
         '''
         Load an existing model located in a given path
         '''
+
+        self.model = TFBertModel.from_pretrained("bert-base-uncased")
+
+
+
 
 
 class NerModel():
