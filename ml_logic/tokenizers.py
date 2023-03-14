@@ -1,5 +1,7 @@
 
-### Import packages ###
+'''
+Import packages
+'''
 
 # Bert
 from transformers import BertTokenizer
@@ -9,13 +11,12 @@ from transformers import BertTokenizer
 
 class Tokenizer():
 
-    #Constructor#
-    def __init__(self, tokenizer = BertTokenizer, from_pretrained = "bert-base-uncased", max_length = 256):
+    def __init__(self, tokenizer = BertTokenizer, from_pretrained = "bert-base-uncased", max_length = 512):
         self.tokenizer = tokenizer.from_pretrained(from_pretrained)
         self.max_length = max_length
 
 
-    def tokenize(self, sentences):
+    def tokenize_bert(self, sentences):
         '''
         function used to tokenize data depending on the type of tokenizer used
         '''
