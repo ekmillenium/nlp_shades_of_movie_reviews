@@ -20,8 +20,10 @@ class Preprocessing():
             self.bert()
         elif model == "ner":
             self.ner()
+        elif model == "bart":
+            self.bart()
         else:
-            print('UnkownModelError: the available models are ["bert","ner"].')
+            print('UnknownModelError: the available models are ["bert","ner","bart"].')
 
 
     ### Preprocessing for NER ###
@@ -88,7 +90,30 @@ class Preprocessing():
         #remove extra space
         self.review = " ".join(self.review.split())
 
+    ### Preprocessing for BART summarizer ###
 
+    def bart(self):
+        '''
+        Function to do the basic data preprocessing for BART model
+        - remove the lines about "how many people found this useful" at the end of some reviews
+        - remove urls from text
+        - remove html tags if there are any
+        - remove extra space
+        '''
+        # remove the lines about "how many people found this useful" at the end of some reviews
+        self.review = re.sub("Permalink", "", self.review)
+        self.review = re.sub("Was this review helpful?", "", self.review)
+        self.review = re.sub("Sign in to vote.", "", self.review)
+        self.review = re.sub("\d+ out of \d+ found this helpful", "", self.review)
+
+        # Remove urls from text
+        self.review = re.sub(r"http\S+", "", self.review)
+
+        #remove html tags if there are any
+        self.review = re.sub(re.compile('<.*?>'), '', self.review)
+
+        #remove extra space
+        self.review = " ".join(self.review.split())
 
 class TargetBuilder():
 #Class used to add the target columns to the data: the reviews are retrieved as X/10 and can be classed in 2, 3 or 5 classes

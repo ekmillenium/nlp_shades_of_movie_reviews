@@ -1,8 +1,8 @@
 
 ### Import packages ###
 
-# Bert
-from transformers import TFBertModel
+# BERT and BART
+from transformers import TFBertModel, AutoTokenizer, BartForConditionalGeneration
 import tensorflow as tf
 
 # Spacy
@@ -14,8 +14,6 @@ import pandas as pd
 
 # Relatives
 from ml_logic.data import Preprocessing
-
-
 
 class BertModel():
 
@@ -163,3 +161,128 @@ class NerModel():
                         people_extracted.append(ent.text)
 
         return ' '.join(str(sent) for sent in people_extracted)
+
+class BartModel():
+
+    #Constructor#
+    def __init__(self, tokenizer = AutoTokenizer, backbone_model = BartForConditionalGeneration, from_pretrained = "facebook/bart-large-cnn",  min_length = 0, max_length = 100):
+        self.tokenizer = tokenizer.from_pretrained(from_pretrained)
+        self.backbone_model = backbone_model
+        self.from_pretrained = from_pretrained
+        self.min_length = min_length
+        self.max_length = max_length
+
+    def tokenize(self, sentences):
+        '''
+        Tokenize data depending on the type of tokenizer used.
+        Output is a list that includes the sequence of tokens and its length.
+        '''
+        token_sequence = self.tokenizer(sentences, max_length=1024, truncation=True, return_tensors="pt")['input_ids'] # Sequence of tokens
+
+        token_count = len(token_sequence[0]) # Count number of tokens in sequence
+        return [token_sequence, token_count]
+
+    def get_summary_from_sequence(self, sequence):
+        '''
+        Generate summary from sequence of tokens depending on the chosen backbone model.
+        Output is a string.
+        '''
+        model = self.backbone_model.from_pretrained(self.from_pretrained)
+        summary_ids = model.generate(sequence, num_beams=2, min_length=self.min_length, max_length=self.max_length)
+        return self.tokenizer.batch_decode(summary_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+
+    def get_summary_from_text(self, full_text):
+        '''
+        Generate summary from string depending on the chosen backbone model.
+        Output is a string.
+        '''
+        sequence = self.tokenize(full_text)[0]
+        return self.get_summary_from_sequence(sequence)
+
+    # Extract scraped reviews for a movie from the dataset
+    """ Warning: This needs to be reworked once the get data function is built. """
+    def get_reviews_for_movie(self, tconst, review_count):
+        df = pd.read_csv("../raw_data/reviews_vf.csv")
+        reviews_for_a_movie = df[df["tconst"] == tconst].copy()
+        total_reviews = reviews_for_a_movie.shape[0]
+        if total_reviews < review_count:
+            review_count = total_reviews
+        reviews_for_a_movie = reviews_for_a_movie.iloc[0:review_count]
+        #reviews_for_a_movie["content"] = reviews_for_a_movie["content"].apply(basic_preprocessing)
+
+        return reviews_for_a_movie
+
+    # Summarize scraped reviews
+    """ Warning: This needs to be reworked once the get data function is built. """
+    def review_summarizer(self, df, column="content"):
+        ''' Input is a Panda series, output is list of summaries. '''
+        df["summary"] = df["content"].apply(lambda x: self.get_summary_from_text(x))
+        summaries = df["summary"].tolist()
+        return summaries
+
+    def get_chunks(self, summaries):
+        '''
+        Function to create chunk of summaries from a list of summaries.
+        Output is a dictionary of chunks.
+        '''
+        master_dict = {}
+        token_counter = 0
+        key_counter = 0
+
+        for i in range(len(summaries)):
+
+            full_text = summaries[i]
+            tokens = self.tokenize(full_text)[1] # Sequence length
+            token_counter += tokens
+
+            if token_counter < 1024:
+                if i == 0:
+                    master_dict[key_counter] = summaries[i]
+                else:
+                    master_dict[key_counter] = master_dict[key_counter] + " " + summaries[i]
+
+            else:
+                token_counter = tokens
+                key_counter += 1
+                master_dict[key_counter] = summaries[i]
+
+        return master_dict
+
+    def chunk_summarizer(self, chunks_dict):
+        '''
+        Summarize chunks and generate a list of summaries.
+        Used in function iterative_summarizer
+        '''
+        summaries_list = []
+        for key in chunks_dict:
+            summary = self.get_summary_from_text(chunks_dict[key])
+            summaries_list.append(summary)
+        return summaries_list
+
+    def iterative_summarizer(self, chunks_dict):
+        '''
+        Summarize summaries until there is one chunck left
+        '''
+        print(f'''{len(chunks_dict)} chunk(s) will be summarized.''') # DELETE
+
+        # Summarize each chunk and concatenate all the summaries in a list of summaries
+        summaries_list = self.chunk_summarizer(chunks_dict)
+
+        # Generate chunks from new list of summaries
+        chunks_dict = self.get_chunks(summaries_list)
+        print(f'''{len(chunks_dict)} new chunk(s) was/were created.''') # DELETE
+        if len(chunks_dict) > 1:
+            self.iterative_summarizer(chunks_dict)
+        return self.get_summary_from_text(chunks_dict[0])
+
+    def get_summary_for_movie(self, tconst, review_count):
+        '''
+        Master function to get summary for a given movie based on unique identifier and predefined number of reviews
+        '''
+        reviews_for_a_movie = self.get_reviews_for_movie(tconst, review_count)
+        print(f"""{reviews_for_a_movie.shape[0]} reviews will be summarized.""") #DELETE
+        summaries = self.review_summarizer(reviews_for_a_movie, "content")
+        print(f"""{len(summaries)} reviews were summarized.""") #DELETE
+        chunks_dict = self.get_chunks(summaries)
+        summary = self.iterative_summarizer(chunks_dict)
+        return summary
