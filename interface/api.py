@@ -47,14 +47,14 @@ def extract_entities(title: str):
   ### SCRAPER HERE ###
   pass
 
-  df = pd.read_csv('./raw_data/reviews_10k.csv')
-  df = df.head(2)
-  df = run_ner_model(df=df)
+  # df = pd.read_csv('./raw_data/reviews_10k.csv')
+  # df = df.head(2)
+  # df = run_ner_model(df=df)
   
-  return {
-    "Content": df["content_extracted"],
-    "Content labelized": df["content_extracted_labelized"]
-  }
+  # return {
+  #   "Content": df["content_extracted"],
+  #   "Content labelized": df["content_extracted_labelized"]
+  # }
 
 
 # Root
