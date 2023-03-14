@@ -127,6 +127,18 @@ class BertModel():
         return self.model.predict(X)
 
 
+    def save(self, path):
+        """
+        Saves the model in a given path
+        """
+
+
+    def load(self, path):
+        '''
+        Load an existing model located in a given path
+        '''
+
+
 class NerModel():
 
     def __init__(self, pretrained_model: str = None, review: str = None):

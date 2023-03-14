@@ -15,10 +15,16 @@ class Tokenizer():
         self.max_length = max_length
 
 
-    def tokenize_bert(self, sentences):
+    def tokenize(self, sentences):
         '''
         function used to tokenize data depending on the type of tokenizer used
         '''
+        # If the given sentence is a string, transform to list to apply tokenizer
+        if type(sentences) == str:
+            liste = []
+            liste.append(sentences)
+            sentences = liste
+
         tokens = self.tokenizer(list(sentences),
                          max_length = self.max_length,
                          truncation=True,
