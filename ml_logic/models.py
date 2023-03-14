@@ -153,14 +153,16 @@ class NerModel():
     def extract_content(self, model):
         doc = model(self.review)
         sentences_extracted = []
+        sentences_extracted_labelized = []
 
         if doc.ents != ():
             for ent in  doc.ents:
                 if ent.label_ == "PERSON":
                     if ent.sent not in sentences_extracted:
                         sentences_extracted.append(ent.sent)
+                        sentences_extracted_labelized.append(displacy.render(model(str(ent.sent)), style="ent", options={'ents': ['PERSON']}))
 
-        return ' '.join(str(sent) for sent in sentences_extracted)
+        return ' '.join(str(sent) for sent in sentences_extracted), ' '.join(str(sent) for sent in sentences_extracted_labelized)
 
 
     def extract_people(self, model):
