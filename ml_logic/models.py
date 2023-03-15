@@ -1,5 +1,7 @@
 
-### Import packages ###
+'''
+Import packages
+'''
 
 # BERT and BART
 from transformers import TFBertModel, AutoTokenizer, BartForConditionalGeneration
@@ -15,15 +17,15 @@ import pandas as pd
 # Relatives
 from ml_logic.data import Preprocessing
 
+
 class BertModel():
 
-    #Constructor#
-    def __init__(self, backbone_model = TFBertModel, from_pretrained = "bert-base-uncased",  max_length = 256, nb_categories = 2):
+    def __init__(self, backbone_model = TFBertModel, from_pretrained = "bert-base-uncased",  max_length = 512, nb_categories = 3):
         self.backbone_model = backbone_model
         self.pretrained = from_pretrained
         self.max_length = max_length
         self.nb_categories = nb_categories
-        self.model = "hello"
+        self.model = None
 
 
     def build(self):
@@ -41,6 +43,8 @@ class BertModel():
 
         #Add layers
         x = tf.keras.layers.Dense(self.max_length,activation='relu')(x)
+        x = tf.keras.layers.Dense(128,activation='relu')(x)
+        x = tf.keras.layers.Dense(32,activation='relu')(x)
 
         #define the last layer according to the number of categories in the output
         if self.nb_categories == 2:
@@ -123,10 +127,19 @@ class BertModel():
         return self.model.predict(X)
 
 
+    def load(self):
+        '''
+        Load an existing model located in a given path
+        '''
+
+        self.model = TFBertModel.from_pretrained("bert-base-uncased")
+
+
+
+
 
 class NerModel():
 
-    # Constructor #
     def __init__(self, pretrained_model: str = None, review: str = None):
         self.pretrained_model = pretrained_model
         self.review = review
@@ -140,14 +153,16 @@ class NerModel():
     def extract_content(self, model):
         doc = model(self.review)
         sentences_extracted = []
+        sentences_extracted_labelized = []
 
         if doc.ents != ():
             for ent in  doc.ents:
                 if ent.label_ == "PERSON":
                     if ent.sent not in sentences_extracted:
                         sentences_extracted.append(ent.sent)
+                        sentences_extracted_labelized.append(displacy.render(model(str(ent.sent)), style="ent", options={'ents': ['PERSON']}))
 
-        return ' '.join(str(sent) for sent in sentences_extracted)
+        return ' '.join(str(sent) for sent in sentences_extracted), ' '.join(str(sent) for sent in sentences_extracted_labelized)
 
 
     def extract_people(self, model):
