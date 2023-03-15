@@ -286,3 +286,19 @@ class BartModel():
         chunks_dict = self.get_chunks(summaries)
         summary = self.iterative_summarizer(chunks_dict)
         return summary
+
+    def get_summary_demo_day(self, df, review_limit):
+        '''
+        Master function to get summary for a given movie during the demo day.
+        Df is the dataframe returned by the parser.
+        Review_limit is the number of reviews to summarize.
+        '''
+        total_reviews = df.shape[0]
+        if total_reviews < review_limit:
+            review_limit = total_reviews
+        df = df.iloc[0:review_limit]
+        summaries = self.review_summarizer(df, "content")
+        print(f"""{len(summaries)} reviews were summarized.""") #DELETE
+        chunks_dict = self.get_chunks(summaries)
+        summary = self.iterative_summarizer(chunks_dict)
+        return summary
