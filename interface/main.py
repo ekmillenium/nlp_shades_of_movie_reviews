@@ -13,7 +13,7 @@ from google.cloud import bigquery
 
 # Relatives
 from ml_logic.data import Preprocessing
-from ml_logic.models import NerModel, BertModel
+from ml_logic.models import NerModel, BertModel, BartModel
 from ml_logic.tokenizers import Tokenizer
 from params import *
 
@@ -68,10 +68,16 @@ def run_ner_model(df: pd.DataFrame):
 
   model = NerModel(pretrained_model="en_core_web_trf").load()
 
-  df["content_extracted"], df["content_extracted_labelized"] = df["content_cleaned"].apply(
+  df["content_extracted"] = df["content_cleaned"].apply(
     lambda r : NerModel(
       review=r
     ).extract_content(model)
+  )
+
+  df["content_extracted_labelized"] = df["content_cleaned"].apply(
+    lambda r : NerModel(
+      review=r
+    ).extract_content_labelized(model)
   )
 
   df["people_extracted"] = df["content_cleaned"].apply(
@@ -116,7 +122,13 @@ def run_bert_model(df: pd.DataFrame):
   return result
 
 
-
+def run_bart_model(df: pd.DataFrame):
+  '''
+  Clean the data and run BART model
+  '''
+  df['content'] = df['content'].apply(lambda x: Preprocessing(review = x,model = 'bart').review)
+  summary = BartModel().get_summary_demo_day(df=df, review_limit=25)
+  return summary
 
 
 
