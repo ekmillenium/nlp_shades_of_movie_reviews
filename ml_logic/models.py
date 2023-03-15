@@ -316,4 +316,5 @@ class BartModel():
         print(f"""{len(summaries)} reviews were summarized.""") #DELETE
         chunks_dict = self.get_chunks(summaries)
         summary = self.iterative_summarizer(chunks_dict)
+
         return summary
