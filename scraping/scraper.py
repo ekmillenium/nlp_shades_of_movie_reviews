@@ -10,6 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 
 class Film :
@@ -25,7 +26,7 @@ class MovieScrapper:
         self,
         browser: str = "firefox",
         movie: str = None,
-        review_number: int = 200,
+        review_number: int = 25,
     ) -> None:
         self.review_number = int(review_number)
         self.key = "k_yna0pgoc"
@@ -47,12 +48,12 @@ class MovieScrapper:
         if not movie :
             raise ValueError("need id or title")
         self.driver.get(
-            f"https://www.imdb.com/title/{self._get_id_from_title(movie)}/reviews"
+            f"https://www.imdb.com/title/{self._get_id_from_title(movie)}/reviews"            
         )
-        self.film = Film(self.movie_query["results"][0]["title"],
-                         self.movie_query["results"][0]["image"],
-                         self.movie_query["results"][0]["id"],
-                         self._get_review())
+        self.film = Film(titre=self.movie_query["results"][0]["title"],
+                         image=self.movie_query["results"][0]["image"],
+                         _id=self.movie_query["results"][0]["id"],
+                         reviews=self._get_review())
         self.driver.quit()
 
     def _get_id_from_title(self, movie) -> str:
@@ -112,10 +113,14 @@ class MovieScrapper:
         while number != 0:
             try:
                 WebDriverWait(self.driver, timeout=5).until(
-                    lambda d: d.find_element(
-                        By.XPATH, "//button[@id='load-more-trigger']"
-                    ).click()
+                    EC.element_to_be_clickable(
+                        (By.XPATH, "//button[@id='load-more-trigger']")
+                    )
                 )
+                self.driver.find_element(
+                    By.XPATH, "//button[@id='load-more-trigger']"
+                ).click()
+                
                 number -= 1
             except:
                 break
@@ -128,5 +133,5 @@ if __name__ == "__main__":
     # globals()[args[1]](*args[2:])
 
 
-    print(MovieScrapper("chrome",'Avatar').film.reviews)
+    print(MovieScrapper("chrome",'Avatar').film.reviews) # content, title, rating --> shape (nb_rows,3)
     #print(MovieScrapper("chrome",'Avatar').film.image)

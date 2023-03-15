@@ -18,7 +18,7 @@ install:
 
 
 # ----------------------------------
-#    PACKAGES ACTIONS
+#    LOAD DATA
 # ----------------------------------
 
 load_10k_data_to_bq:
@@ -33,6 +33,11 @@ load_450k_data_to_bq:
 load_all_data_to_bq:
 	python ml_logic/data.py load_data_to_bq 'all'
 
+
+# ----------------------------------
+#    NER
+# ----------------------------------
+
 run_ner_on_10k:
 	python interface/main.py run_ner_model '10k'
 
@@ -45,6 +50,13 @@ run_ner_on_450k:
 run_ner_on_all:
 	python interface/main.py run_ner_model 'all'
 
+
+# ----------------------------------
+#    SCRAPER
+# ----------------------------------
+
+run_scraper:
+	python scraping/scraper.py
 
 # ----------------------------------
 #    API
