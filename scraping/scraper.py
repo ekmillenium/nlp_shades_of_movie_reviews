@@ -12,18 +12,20 @@ from webdriver_manager.core.utils import ChromeType
 from webdriver_manager.firefox import GeckoDriverManager
 import pandas as pd
 
-class Review:
-    def __init__(self, rating, str_review):
-        self.rating = rating
-        self.str_review = str_review
+class Film :
+    def __init__(self,titre,image,_id,reviews):
+        self._id = _id
+        self.titre = titre
+        self.image = image
+        self.reviews = reviews
+
 
 class MovieScrapper:
     def __init__(
         self,
         browser: str = "firefox",
         movie: str = None,
-        review_number: int = 5,
-        _id: str = None,
+        review_number: int = 200,
     ) -> None:
         self.review_number = int(review_number)
         self.key = "k_yna0pgoc"
@@ -42,12 +44,15 @@ class MovieScrapper:
                         ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()
                     )
                 )
-        if not movie and not _id:
+        if not movie :
             raise ValueError("need id or title")
         self.driver.get(
-            f"https://www.imdb.com/title/{_id if _id else self._get_id_from_title(movie)}/reviews"
+            f"https://www.imdb.com/title/{self._get_id_from_title(movie)}/reviews"
         )
-        self.reviews = self._get_review()
+        self.film = Film(self.movie_query["results"][0]["title"],
+                         self.movie_query["results"][0]["image"],
+                         self.movie_query["results"][0]["id"],
+                         self._get_review())
         self.driver.quit()
 
     def _get_id_from_title(self, movie) -> str:
@@ -73,6 +78,7 @@ class MovieScrapper:
         """
         review_list = []
         rating_list = []
+        title_list = []
         WebDriverWait(self.driver, timeout=10).until(
             lambda d: d.find_element(By.XPATH, "//section[@class='article']")
         )
@@ -89,13 +95,15 @@ class MovieScrapper:
                 stars = None
             str_review = review.find(
                 "div", {"class": re.compile("text show-more__control")}
-            ).text  # find_element(By.XPATH,"//div[contains(@class,'text show-more__control')]")
-            r = Review(stars, str_review)
-            #print(r.rating)
-            #print(r.str_review)
-            review_list.append(r.str_review)
-            rating_list.append(r.rating)
-            df = pd.DataFrame({"content": review_list, "rating": rating_list})
+            ).get_text()
+            str_title = review.find(
+                "a", {"class": re.compile("title")}
+            ).get_text().replace("/n","")
+
+            rating_list.append(stars)
+            review_list.append(str_review)
+            title_list.append(str_title)
+        df = pd.DataFrame({"title": title_list,"content": review_list, "rating": rating_list})
         return df
 
     def _show_more(self):
@@ -112,8 +120,13 @@ class MovieScrapper:
             except:
                 break
 
+
 if __name__ == "__main__":
     import sys
 
-    args = sys.argv
-    globals()[args[1]](*args[2:])
+    # args = sys.argv
+    # globals()[args[1]](*args[2:])
+
+
+    #print(MovieScrapper("chrome",'Avatar').film.reviews)
+    #print(MovieScrapper("chrome",'Avatar').film.image)
