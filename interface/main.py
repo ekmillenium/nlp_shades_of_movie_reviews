@@ -124,8 +124,9 @@ def run_bert_model(df: pd.DataFrame):
 
 def run_bart_model(df: pd.DataFrame):
   '''
-  BART model
+  Clean the data and run BART model
   '''
+  df['content'] = df['content'].apply(lambda x: Preprocessing(review = x,model = 'bart').review)
   summary = BartModel().get_summary_demo_day(df=df, review_limit=25)
   return summary
 
