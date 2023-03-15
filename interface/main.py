@@ -90,7 +90,7 @@ def run_ner_model(df: pd.DataFrame):
   return df
 
 
-def run_bert_model(df: pd.DataFrame, model = None):
+def run_bert_model(df: pd.DataFrame, model = None, base = None):
   '''
   BERT model with additional layers to make a sentiment classification. The model has already been build and trained
 
@@ -102,9 +102,12 @@ def run_bert_model(df: pd.DataFrame, model = None):
   #Load the model
   if model == None:
       model = BertModel().load()
-
+      
   #Concatenate the title and the content of the review
-  df['clean_content'] = df['title'].astype(str) + " " +  df['content'].astype(str)
+  if base == "people":
+    df['clean_content'] = df['content_extracted'].astype(str)
+  else:
+    df['clean_content'] = df['title'].astype(str) + " " +  df['content'].astype(str)
 
   #Clean the reviews
   df['clean_content'] = df['clean_content'].apply(lambda x: Preprocessing(review = x,model = 'bert').review)
@@ -126,6 +129,44 @@ def run_bert_model(df: pd.DataFrame, model = None):
   #Add the results to 'model_rating' column in data
   df['model_rating'] = model_rating
 
+  return df
+
+
+def run_bert_model_for_people(df: pd.DataFrame, model = None):
+  '''
+  BERT model with additional layers to make a sentiment classification. The model has already been build and trained
+
+  - Load the model if no model is given in argument
+  - Clean the data
+  - Predict sentiment (negative, neutral, positive) for each review
+  '''
+
+  #Load the model
+  if model == None:
+      model = BertModel().load()
+
+  #Concatenate the title and the content of the review
+  df['clean_content'] = df['content_extracted'].astype(str)
+
+  #Clean the reviews
+  df['clean_content'] = df['clean_content'].apply(lambda x: Preprocessing(review = x,model = 'bert').review)
+
+  #Build the rating_3_classes column
+  df['rating_3_classes'] = df['rating'].apply(lambda x: TargetBuilder(rating = x,model = 'bert', nb_classes = 3 ).rating).astype('int')
+
+  #Tokenize the data
+  tokenizer = Tokenizer()
+  tokens = tokenizer.tokenize(list(df['clean_content']))
+
+
+  #predict the values
+  results = model(tokens)
+  model_rating = []
+  for result in np.array(results):
+    model_rating.append(result.argmax())
+
+  #Add the results to 'model_rating' column in data
+  df['model_rating'] = model_rating
 
   return df
 
