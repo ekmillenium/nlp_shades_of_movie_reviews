@@ -5,6 +5,7 @@ Import packages
 
 # Basics
 import pandas as pd
+import numpy as np
 import sys
 from pathlib import Path
 
@@ -12,7 +13,7 @@ from pathlib import Path
 from google.cloud import bigquery
 
 # Relatives
-from ml_logic.data import Preprocessing
+from ml_logic.data import Preprocessing, TargetBuilder
 from ml_logic.models import NerModel, BertModel, BartModel
 from ml_logic.tokenizers import Tokenizer
 from params import *
@@ -89,14 +90,18 @@ def run_ner_model(df: pd.DataFrame):
   return df
 
 
-def run_bert_model(df: pd.DataFrame):
+def run_bert_model(df: pd.DataFrame, model = None):
   '''
   BERT model with additional layers to make a sentiment classification. The model has already been build and trained
 
+  - Load the model if no model is given in argument
   - Clean the data
-  - Load the pretrained model
   - Predict sentiment (negative, neutral, positive) for each review
   '''
+
+  #Load the model
+  if model == None:
+      model = BertModel().load()
 
   #Concatenate the title and the content of the review
   df['clean_content'] = df['title'].astype(str) + " " +  df['content'].astype(str)
@@ -104,22 +109,26 @@ def run_bert_model(df: pd.DataFrame):
   #Clean the reviews
   df['clean_content'] = df['clean_content'].apply(lambda x: Preprocessing(review = x,model = 'bert').review)
 
+  #Build the rating_3_classes column
+  df['rating_3_classes'] = df['rating'].apply(lambda x: TargetBuilder(rating = x,model = 'bert', nb_classes = 3 ).rating).astype('int')
 
   #Tokenize the data
   tokenizer = Tokenizer()
   tokens = tokenizer.tokenize(list(df['clean_content']))
 
-  print(tokens)
 
-  #Load the pretrained model
-  model = BertModel()
-  model.load()
+  #predict the values
+  results = model(tokens)
+  model_rating = []
+  for result in np.array(results):
+    model_rating.append(result.argmax())
 
-#predict the value
-  result = model.predict(tokens)
+  #Add the results to 'model_rating' column in data
+  df['model_rating'] = model_rating
 
 
-  return result
+  return df
+
 
 
 def run_bart_model(df: pd.DataFrame):

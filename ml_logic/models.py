@@ -25,7 +25,11 @@ class BertModel():
         self.pretrained = from_pretrained
         self.max_length = max_length
         self.nb_categories = nb_categories
-        self.model = None
+        self.model = self.build()
+
+        #Compile the built model in the init function
+        self.compile()
+
 
 
     def build(self):
@@ -42,9 +46,8 @@ class BertModel():
         x = backbone(dict(input_ids=token_ids,attention_mask=attention_mask))[1]
 
         #Add layers
-        x = tf.keras.layers.Dense(self.max_length,activation='relu')(x)
         x = tf.keras.layers.Dense(128,activation='relu')(x)
-        x = tf.keras.layers.Dense(32,activation='relu')(x)
+        x = tf.keras.layers.Dense(16,activation='relu')(x)
 
         #define the last layer according to the number of categories in the output
         if self.nb_categories == 2:
@@ -63,7 +66,7 @@ class BertModel():
         model = tf.keras.Model(inputs=dict(input_ids=token_ids,attention_mask=attention_mask),outputs=output)
 
 
-        self.model = model
+        return model
 
 
 
@@ -87,6 +90,7 @@ class BertModel():
             loss=loss,
             optimizer= 'adam',
             metrics=metrics)
+
 
 
     def train(self, train_tokens, val_tokens, y_train, y_val,  epochs = 3, batch_size = 64, early_stopping = 0):
@@ -115,26 +119,13 @@ class BertModel():
         return history
 
 
-
-    def predict(self, tokens):
-        '''
-        returns the prediction for given reviews, the input should have been tokenized before using an adapted tokenizer
-        '''
-        X = {
-            'input_ids': tokens['input_ids'],
-            'attention_mask': tokens['attention_mask']
-            }
-        return self.model.predict(X)
-
-
-    def load(self):
+    def load(self, checkpoint_path = "checkpoint_file/MODEL1"):
         '''
         Load an existing model located in a given path
         '''
+        self.model.load_weights(checkpoint_path)
 
-        self.model = TFBertModel.from_pretrained("bert-base-uncased")
-
-
+        return self.model
 
 
 
@@ -169,7 +160,7 @@ class NerModel():
             for ent in  doc.ents:
                 if ent.label_ == "PERSON":
                     sentences_extracted_labelized.append(displacy.render(model(str(ent.sent)), style="ent", options={'ents': ['PERSON']}))
-        
+
         return ' '.join(str(sent) for sent in sentences_extracted_labelized)
 
     def extract_people(self, model):
