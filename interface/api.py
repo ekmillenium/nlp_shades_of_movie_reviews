@@ -11,7 +11,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Relatives
-from interface.main import run_ner_model
+from interface.main import run_ner_model, run_bart_model
+from scraping.scraper import MovieScrapper
 
 
 '''
@@ -34,7 +35,7 @@ Specifications
 '''
 
 # NER (extract entities)
-@app.get("/extract_entities") # http://localhost:8000/extract_entities?title=Pulp%20Fiction
+@app.get("/extract_entities") # http://localhost:8000/extract_entities?title=Avatar
 def extract_entities(title: str):
   '''
   - Scrap the Imdb web site to get the reviews of the movie
@@ -44,18 +45,33 @@ def extract_entities(title: str):
     2- Load the pretrained model
     3- Extract entities
   '''
-  ### SCRAPER HERE ###
-  pass
-
-  # df = pd.read_csv('./raw_data/reviews_10k.csv')
-  # df = df.head(2)
-  # df = run_ner_model(df=df)
   
-  # return {
-  #   "Content": df["content_extracted"],
-  #   "Content labelized": df["content_extracted_labelized"]
-  # }
+  df = MovieScrapper("chrome",title).film.reviews
+  df = df
+  df = run_ner_model(df=df)
+  
+  return {
+    "People": df["people_extracted"],
+    "Content": df["content_extracted"],
+    "Content labelized": df["content_extracted_labelized"]
+  }
 
+@app.get("/summarize") # http://localhost:8000/summarize?title=Avatar
+def summarize(title: str):
+  '''
+  - Scrap the Imdb web site to get the reviews of the movie
+  - Convert response to dataframe
+  - Run NER model
+    1- Render str summary
+  '''
+  
+  df = MovieScrapper("chrome",title).film.reviews
+  df = df
+  summary = run_bart_model(df=df)
+  
+  return {
+    "Summarize": summary
+  }
 
 # Root
 @app.get("/")
