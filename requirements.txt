@@ -21,3 +21,4 @@ transformers
 bs4
 selenium
 webdriver_managers
+wordcloud
