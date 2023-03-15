@@ -20,4 +20,4 @@ uvicorn
 transformers
 bs4
 selenium
-webdriver_managers
+webdriver_manager
