@@ -21,6 +21,7 @@ movie_name = str(st.text_input("Type the name of the movie"))
 #Create 2 columns to separate the main page
 col1, col2 = st.columns([3,7])
 
+#Display the poster from the film
 with col1:
    #Display the poster of the movie
     img_url = "https://m.media-amazon.com/images/M/MV5BN2EyZjM3NzUtNWUzMi00MTgxLWI0NTctMzY4M2VlOTdjZWRiXkEyXkFqcGdeQXVyNDUzOTQ5MjY@._V1_Ratio0.6757_AL_.jpg"
@@ -28,12 +29,41 @@ with col1:
 
 with col2:
     Sentiment, Actors , Summary, Other = st.tabs(["Sentiment analysis on top reviews","Most cited actors","Reviews summary","Other"])
+    #Sentiment analysis from reviews - with Bert model
     with Sentiment:
         st.markdown('Coming soon...')
+        # url = "http://localhost:8000/sentiment-analysis"
+        # parameters = {
+        #     'title' : movie_name
+        # }
+        # r = requests.get(url, params=parameters).json()
+        # data = r['Rating']
+        # st.write()
+        ########### For visual test only ##################
+        data = {
+            'id' : [1,2,3,4,5,6,7,8,9,10],
+            'model_rate' : [1,0,2,1,1,2,1,0,2,1]
+        }
+
     with Actors:
         st.markdown('Coming soon...')
+        # url = "http://localhost:8000/extract_entities"
+        # parameters = {
+        #      'title' : movie_name
+        #  }
+        # r = requests.get(url, params=parameters).json()
+        # data = r["People"]
+        # st.write(data)
+
     with Summary:
         st.markdown('Coming soon...')
+        # url = "http://localhost:8000/extract_entities"
+        # parameters = {
+        #      'title' : movie_name
+        #  }
+        # r = requests.get(url, params=parameters).json()
+        # data = r["People"]
+        # st.write(data)
     with Other:
         st.markdown('Coming soon...')
 
