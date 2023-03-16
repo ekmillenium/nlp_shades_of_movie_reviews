@@ -80,3 +80,6 @@ run_scraper:
 
 run_api:
 	uvicorn interface.api:app --reload
+
+run_streamlit:
+	streamlit run app.py
