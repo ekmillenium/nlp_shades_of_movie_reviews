@@ -158,18 +158,19 @@ def run_models(data_size: str):
   print("-----")
   print("RUN NER")
   print("-----")
-  print(run_ner_model.submit(df=data_frame, wait_for=[data_frame]).result())
+  ner_result = run_ner_model.submit(df=data_frame, wait_for=[data_frame])
   
   print("-----")
   print("RUN BERT")
   print("-----")
-  print(run_bert_model.submit(model=BERT_model, df=data_frame, wait_for=[data_frame]).result())
+  bert_result = run_bert_model.submit(model=BERT_model, df=data_frame, wait_for=[data_frame])
   
   print("-----")
   print("RUN BART")
   print("-----")
+  bart_result = run_bart_model.submit(df=data_frame, wait_for=[data_frame])
   
-  print(run_bart_model.submit(df=data_frame, wait_for=[data_frame]).result())
+  print(ner_result.result(), bert_result.result(), bart_result.result())
   
 
 

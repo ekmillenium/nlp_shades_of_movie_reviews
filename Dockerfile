@@ -17,6 +17,7 @@ RUN make download_spacy_pipeline
 COPY interface /interface
 COPY ml_logic /ml_logic
 COPY scraping /scraping
+COPY app.py app.py
 COPY setup.py setup.py  
 COPY params.py params.py
 RUN pip install .
