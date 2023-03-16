@@ -22,4 +22,5 @@ bs4
 selenium
 webdriver_manager
 wordcloud
+prefect==2.8.1
 streamlit

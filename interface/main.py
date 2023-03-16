@@ -18,6 +18,13 @@ from ml_logic.models import NerModel, BertModel, BartModel
 from ml_logic.tokenizers import Tokenizer
 from params import *
 
+# Model Lifecycle
+from prefect import task, flow
+
+
+# Initialize BERT model
+BERT_model = BertModel().load()
+
 
 def load_data(data_size: str):
   '''
@@ -48,9 +55,10 @@ def load_data(data_size: str):
 
     data.to_csv(data_query_cache_path, header=True, index=False) # Save it locally to accelerate for next queries!
 
-  return data
+  return data.head(5)
 
 
+@task
 def run_ner_model(df: pd.DataFrame):
   '''
   Named Entity Recognition (NER) model
@@ -90,6 +98,7 @@ def run_ner_model(df: pd.DataFrame):
   return df
 
 
+@task
 def run_bert_model(df: pd.DataFrame, model = None, base = None):
   '''
   BERT model with additional layers to make a sentiment classification. The model has already been build and trained
@@ -132,46 +141,7 @@ def run_bert_model(df: pd.DataFrame, model = None, base = None):
   return df
 
 
-def run_bert_model_for_people(df: pd.DataFrame, model = None):
-  '''
-  BERT model with additional layers to make a sentiment classification. The model has already been build and trained
-
-  - Load the model if no model is given in argument
-  - Clean the data
-  - Predict sentiment (negative, neutral, positive) for each review
-  '''
-
-  #Load the model
-  if model == None:
-      model = BertModel().load()
-
-  #Concatenate the title and the content of the review
-  df['clean_content'] = df['content_extracted'].astype(str)
-
-  #Clean the reviews
-  df['clean_content'] = df['clean_content'].apply(lambda x: Preprocessing(review = x,model = 'bert').review)
-
-  #Build the rating_3_classes column
-  df['rating_3_classes'] = df['rating'].apply(lambda x: TargetBuilder(rating = x,model = 'bert', nb_classes = 3 ).rating).astype('int')
-
-  #Tokenize the data
-  tokenizer = Tokenizer()
-  tokens = tokenizer.tokenize(list(df['clean_content']))
-
-
-  #predict the values
-  results = model(tokens)
-  model_rating = []
-  for result in np.array(results):
-    model_rating.append(result.argmax())
-
-  #Add the results to 'model_rating' column in data
-  df['model_rating'] = model_rating
-
-  return df
-
-
-
+@task
 def run_bart_model(df: pd.DataFrame):
   '''
   Clean the data and run BART model
@@ -181,7 +151,27 @@ def run_bart_model(df: pd.DataFrame):
   return summary
 
 
+@flow(name=PREFECT_FLOW_NAME)
+def run_models(data_size: str):
+  data_frame = load_data(data_size=sys.argv[1])
+  
+  print("-----")
+  print("RUN NER")
+  print("-----")
+  print(run_ner_model.submit(df=data_frame, wait_for=[data_frame]).result())
+  
+  print("-----")
+  print("RUN BERT")
+  print("-----")
+  print(run_bert_model.submit(model=BERT_model, df=data_frame, wait_for=[data_frame]).result())
+  
+  print("-----")
+  print("RUN BART")
+  print("-----")
+  
+  print(run_bart_model.submit(df=data_frame, wait_for=[data_frame]).result())
+  
+
 
 if __name__ == '__main__':
-  df = load_data(data_size=sys.argv[2])
-  run_ner_model(df=df)
+  run_models(data_size=sys.argv[1])

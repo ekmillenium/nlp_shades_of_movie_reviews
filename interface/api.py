@@ -91,7 +91,7 @@ def summarize(title:str):
   '''
   
   df = MovieScrapper("chrome",title).film.reviews
-  summary = run_bart_model(df=df, model=None)
+  summary = run_bart_model(df=df)
   
   return {
     "Summarize": summary
