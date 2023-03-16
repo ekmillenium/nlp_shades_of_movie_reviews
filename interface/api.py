@@ -67,7 +67,7 @@ def run_models(title:str):
 ############## run BART model ##########################################################################################
     # 1- Render str summary
 
-#   summary = run_bart_model(df=data)
+  summary = run_bart_model(df=data)
 
 
 ############## run BERT model ##########################################################################################
@@ -93,7 +93,7 @@ def run_models(title:str):
     "Content": df_ner["content_extracted"],
     "Content labelized": df_ner["content_extracted_labelized"],
     # # returns for bart
-    # "Summarize": summary,
+    "Summarize": summary,
     ## returns for bert
     "Rating": df_bert["model_rating"].astype(str),
     "25 Reviews Model Rating Mean": str(model_rating_mean),
