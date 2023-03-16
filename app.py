@@ -1,8 +1,16 @@
+
+'''
+Import packages
+'''
+
+# Basics
 import streamlit as st
 import requests
 import pandas as pd
 import numpy as np
 
+# Relatives
+from interface.main import load_data
 
 
 #Configuration
