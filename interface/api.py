@@ -52,7 +52,6 @@ def run_models(title:str):
   data = film.reviews
   image_url = film.image
 
-
 ############## run NER model ##########################################################################################
     # 1- Preprocess the data
     # 2- Load the pretrained model
