@@ -102,7 +102,7 @@ def run_bert_model(df: pd.DataFrame, model = None, base = None):
   #Load the model
   if model == None:
       model = BertModel().load()
-      
+
   #Concatenate the title and the content of the review
   if base == "people":
     df['clean_content'] = df['content_extracted'].astype(str)
@@ -177,7 +177,7 @@ def run_bart_model(df: pd.DataFrame):
   Clean the data and run BART model
   '''
   df['content'] = df['content'].apply(lambda x: Preprocessing(review = x,model = 'bart').review)
-  summary = BartModel().get_summary_demo_day(df=df, review_limit=25)
+  summary = BartModel().get_summary_demo_day(df=df, review_limit=2)
   return summary
 
 
