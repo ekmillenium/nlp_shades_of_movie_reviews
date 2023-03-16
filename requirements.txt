@@ -20,5 +20,5 @@ uvicorn
 transformers
 bs4
 selenium
-webdriver_manager
+webdriver_managers
 wordcloud
