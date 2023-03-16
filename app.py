@@ -39,6 +39,12 @@ with col2:
         # r = requests.get(url, params=parameters).json()
         # data = r['Rating']
         # st.write()
+        ########### For visual test only ##################
+        data = {
+            'id' : [1,2,3,4,5,6,7,8,9,10],
+            'model_rate' : [1,0,2,1,1,2,1,0,2,1]
+        }
+
     with Actors:
         st.markdown('Coming soon...')
         # url = "http://localhost:8000/extract_entities"
