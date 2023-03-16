@@ -20,5 +20,13 @@ INSTANCE = os.environ.get("INSTANCE")
 GCR_IMAGE = os.environ.get("GCR_IMAGE")
 GCR_REGION = os.environ.get("GC_REGION")
 
+# Goggle Cloud Run
+MEMORY = os.environ.get("MEMORY")
+SERVICE_URL = os.environ.get("SERVICE_URL")
+
+# Model Lifecycle
+PREFECT_FLOW_NAME = os.environ.get("PREFECT_FLOW_NAME")
+PREFECT_LOG_LEVEL = os.environ.get("PREFECT_LOG_LEVEL")
+
 ##################  CONSTANTS  #####################
 LOCAL_DATA_PATH = os.path.join(os.path.expanduser('~'), os.environ.get("LOCAL_DATA_PATH"))
