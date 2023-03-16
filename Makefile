@@ -52,6 +52,22 @@ run_ner_on_all:
 
 
 # ----------------------------------
+#    ALL MODELS
+# ----------------------------------
+
+run_all_models_on_10k:
+	python interface/main.py '10k'
+
+run_all_models_on_300k:
+	python interface/main.py '300k'
+
+run_all_models_on_450k:
+	python interface/main.py '450k'
+
+run_all_models_on_all:
+	python interface/main.py 'all'
+
+# ----------------------------------
 #    SCRAPER
 # ----------------------------------
 
