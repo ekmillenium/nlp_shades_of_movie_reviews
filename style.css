@@ -1,0 +1,92 @@
+.align {
+  text-align: center;
+}
+
+.opacity-05 {
+  opacity: .5;
+}
+
+.p-30 {
+  font-size:30px;
+}
+
+.p-40 {
+  font-size:40px;
+}
+
+div.block-container {
+  padding-top:0;
+}
+
+.text-black, p, .st-bx, .st-ch {
+  color:#000 !important;
+  caret-color: #000;
+}
+
+.streamlit-wide, header {
+  background: linear-gradient(90deg, rgba(242,242,242,1) 0%, rgba(244,244,244,1) 50%, rgba(229,229,229,1) 100%) !important;
+}
+
+button[kind="secondary"] {
+  background: #2596be;
+  margin-top: 20px;
+}
+
+button[kind="secondary"] p {
+  color: #fff !important;
+}
+
+button[kind="secondary"]:hover {
+  color: #fff;
+  background: #2681a2;
+  border-color: transparent !important;
+}
+
+.st-da {
+  background: none;
+}
+
+.stMarkdownContainer {
+  padding: 5px;
+}
+
+div[data-baseweb] {
+  background: none !important;
+}
+
+button[data-baseweb="tab"] {
+  padding: 5px;
+  background: transparent;
+}
+
+button[data-baseweb="tab"]:hover p {
+  color: #fff !important;
+}
+button[data-baseweb="tab"]:hover {
+  background-color: #2596be;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+button[aria-selected="true"] p {
+  color: #fff !important;
+}
+button[aria-selected="true"] {
+  background-color: #2596be;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+div[aria-valuenow="100"] .st-cm {
+  background-color: green;
+}
+
+.text-red {
+  color:red !important;
+}
+.text-yellow {
+  color:yellow !important;
+}
+.text-green {
+  color:green !important;
+}
