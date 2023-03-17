@@ -147,32 +147,22 @@ def run_bart_model(df: pd.DataFrame):
   Clean the data and run BART model
   '''
   df['content'] = df['content'].apply(lambda x: Preprocessing(review = x,model = 'bart').review)
-  summary = BartModel().get_summary_demo_day(df=df, review_limit=2)
+  summary = BartModel().get_summary_demo_day(df=df, review_limit=50)
   return summary
 
 
 @flow(name=PREFECT_FLOW_NAME)
-def run_models(data_size: str):
-  data_frame = load_data(data_size=sys.argv[1])
+def run_models(df):
+  #data_frame = load_data(data_size=sys.argv[1])
   
-  print("-----")
-  print("RUN NER")
-  print("-----")
-  ner_result = run_ner_model.submit(df=data_frame, wait_for=[data_frame])
+  ner_result = run_ner_model.submit(df=df) #, wait_for=[data_frame])
+  bert_result = run_bert_model.submit(model=BERT_model, df=df) #, wait_for=[data_frame])
+  bart_result = run_bart_model.submit(df=df) #, wait_for=[data_frame])
   
-  print("-----")
-  print("RUN BERT")
-  print("-----")
-  bert_result = run_bert_model.submit(model=BERT_model, df=data_frame, wait_for=[data_frame])
-  
-  print("-----")
-  print("RUN BART")
-  print("-----")
-  bart_result = run_bart_model.submit(df=data_frame, wait_for=[data_frame])
-  
-  print(ner_result.result(), bert_result.result(), bart_result.result())
+  return ner_result.result(), bert_result.result(), bart_result.result()
   
 
 
 if __name__ == '__main__':
-  run_models(data_size=sys.argv[1])
+  pass
+  #run_models(data_size=sys.argv[1])
